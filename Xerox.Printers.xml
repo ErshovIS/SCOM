@@ -1,0 +1,1128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ManagementPack SchemaVersion="2.0" ContentReadable="true" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Manifest>
+    <Identity>
+      <ID>Xerox.Printers</ID>
+      <Version>1.1.0.0</Version>
+    </Identity>
+    <Name>Xerox.Printers</Name>
+    <References>
+      <Reference Alias="Health">
+        <ID>System.Health.Library</ID>
+        <Version>7.0.8433.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="System">
+        <ID>System.Library</ID>
+        <Version>7.5.8501.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="SNL">
+        <ID>System.NetworkManagement.Library</ID>
+        <Version>7.0.9538.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="SSL">
+        <ID>System.Snmp.Library</ID>
+        <Version>7.0.8432.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+      <Reference Alias="SystemCenter">
+        <ID>Microsoft.SystemCenter.Library</ID>
+        <Version>7.0.8433.0</Version>
+        <PublicKeyToken>31bf3856ad364e35</PublicKeyToken>
+      </Reference>
+    </References>
+  </Manifest>
+  <TypeDefinitions>
+    <EntityTypes>
+      <ClassTypes>
+        <ClassType ID="Xerox.Printers.Class" Accessibility="Public" Abstract="false" Base="SNL!System.NetworkManagement.Node" Hosted="false" Singleton="false" Extension="false" />        
+      </ClassTypes>
+    </EntityTypes>
+    <ModuleTypes>
+      <DataSourceModuleType ID="Xerox.Printers.Class.Discovery.DS" Accessibility="Internal" Batching="false">
+        <Configuration>
+          <xsd:element minOccurs="1" name="IntervalSeconds" type="xsd:integer" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element minOccurs="0" name="SyncTime" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element minOccurs="1" name="OID" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element minOccurs="1" name="Class" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element minOccurs="1" name="Model" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+          <xsd:element minOccurs="1" name="Vendor" type="xsd:string" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+        </Configuration>
+        <OverrideableParameters>
+          <OverrideableParameter ID="IntervalSeconds" Selector="$Config/IntervalSeconds$" ParameterType="int" />
+          <OverrideableParameter ID="SyncTime" Selector="$Config/SyncTime$" ParameterType="string" />
+        </OverrideableParameters>
+        <ModuleImplementation Isolation="Any">
+          <Composite>
+            <MemberModules>
+              <DataSource ID="Scheduler" TypeID="System!System.Discovery.Scheduler">
+                <Scheduler>
+                  <SimpleReccuringSchedule>
+                    <Interval>$Config/IntervalSeconds$</Interval>
+                    <SyncTime>$Config/SyncTime$</SyncTime>
+                  </SimpleReccuringSchedule>
+                  <ExcludeDates />
+                </Scheduler>
+              </DataSource>
+              <ConditionDetection ID="MapToDiscovery" TypeID="System!System.Discovery.FilteredClassSnapshotDataMapper">
+                <Expression>
+                  <RegExExpression>
+                    <ValueExpression>
+                      <Value>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SystemObjectID$</Value>
+                    </ValueExpression>
+                    <Operator>MatchesRegularExpression</Operator>
+                    <Pattern>$Config/OID$</Pattern>
+                  </RegExExpression>
+                </Expression>
+                <ClassId>$Config/Class$</ClassId>
+                <InstanceSettings>
+                  <Settings>
+                    <Setting>
+                      <Name>$MPElement[Name='System!System.Entity']/DisplayName$</Name>
+                      <Value>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/sysName$</Value>
+                    </Setting>
+                    <Setting>
+                      <Name>$MPElement[Name="SNL!System.NetworkManagement.Node"]/DeviceKey$</Name>
+                      <Value>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/DeviceKey$</Value>
+                    </Setting>
+                    <Setting>
+                      <Name>$MPElement[Name="SNL!System.NetworkManagement.Node"]/Vendor$</Name>
+                      <Value>$Config/Vendor$</Value>
+                    </Setting>
+                    <Setting>
+                      <Name>$MPElement[Name="SNL!System.NetworkManagement.Node"]/Model$</Name>
+                      <Value>$Config/Model$</Value>
+                    </Setting>
+                  </Settings>
+                </InstanceSettings>
+              </ConditionDetection>
+            </MemberModules>
+            <Composition>
+              <Node ID="MapToDiscovery">
+                <Node ID="Scheduler" />
+              </Node>
+            </Composition>
+          </Composite>
+        </ModuleImplementation>
+        <OutputType>System!System.Discovery.Data</OutputType>
+      </DataSourceModuleType>            
+    </ModuleTypes>
+  </TypeDefinitions>
+  <Monitoring>
+    <Discoveries>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXerox5745" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.20.5.31.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox WorkCentre 5745</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXerox5845" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.20.6.19.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox WorkCentre 5845</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXerox7535" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.20.5.39.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox WorkCentre 7535</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXerox7435" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.20.5.4.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox WorkCentre 7435</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXerox5645" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.20.3.38.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox WorkCentre 5645</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXerox7225" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.20.6.31.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox WorkCentre 7225</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXerox5945" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.20.6.41.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox WorkCentre 5945</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXeroxPhaser_4622" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.19.2.4.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox Phaser 4622</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXeroxVersalink_C7025" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.34.2.3.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox VersaLink C7025</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXeroxVersalink_B7025" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.34.3.1.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox VersaLink B7025</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXeroxVersalink_B7030" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.34.3.2.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox VersaLink B7030</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXeroxAltalink_B8045" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.35.1.1.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox AltaLink B8045</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXeroxAltalink_C8035" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.35.2.2.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox AltaLink C8035</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXerox5325" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.20.6.3.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox WorkCentre 5325</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>
+      <Discovery ID="Xerox.Printers.Class.DiscoveryXerox7845" Enabled="true" Target="SNL!System.NetworkManagement.Node" ConfirmDelivery="false" Remotable="true" Priority="Normal">
+        <Category>Discovery</Category>
+        <DiscoveryTypes>
+          <DiscoveryClass TypeID="Xerox.Printers.Class" />
+        </DiscoveryTypes>
+        <DataSource ID="DS" TypeID="Xerox.Printers.Class.Discovery.DS">
+          <IntervalSeconds>300</IntervalSeconds>
+          <SyncTime />
+          <OID>.1.3.6.1.4.1.253.8.62.1.20.6.26.1.1</OID>
+          <Class>$MPElement[Name='Xerox.Printers.Class']$</Class>
+          <Model>Xerox WorkCentre 7845</Model>
+          <Vendor>Xerox</Vendor>
+        </DataSource>
+      </Discovery>      
+    </Discoveries>
+    <Monitors>
+      <UnitMonitor ID="Xerox.Printers.Class.XeroxPaperJam" Accessibility="Public" Enabled="true" Target="Xerox.Printers.Class" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="SNL!System.NetworkManagement.SnmpProbe.2SingleEvent2StateMonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="Xerox.Printers.Class.XeroxPaperJam.Alert">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+          <AlertParameters>
+            <AlertParameter1>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Location$</AlertParameter1>
+            <AlertParameter2>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Model$</AlertParameter2>
+          </AlertParameters>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="Xerox.Printers.Class.XeroxPaperJam.SecondProbe" MonitorTypeStateID="SecondEventRaised" HealthState="Success" />
+          <OperationalState ID="Xerox.Printers.Class.XeroxPaperJam.FirstProbe" MonitorTypeStateID="FirstEventRaised" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <FirstInterval>60</FirstInterval>
+          <FirstIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</FirstIP>
+          <FirstVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</FirstVersion>
+          <FirstSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </FirstSnmpVarBinds>
+          <FirstExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+              </ValueExpression>
+              <Operator>MatchesRegularExpression</Operator>
+              <Pattern>^-0x.4-0x*|^-0x.5-0x*|^-0x.6-0x*|^-0x.7-0x*|^-0x.C-0x*|^-0x.D-0x*|^-0x.E-0x*|^-0x.F-0x*</Pattern>
+            </RegExExpression>
+          </FirstExpression>
+          <SecondInterval>60</SecondInterval>
+          <SecondIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</SecondIP>
+          <SecondVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</SecondVersion>
+          <SecondSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </SecondSnmpVarBinds>
+          <SecondExpression>
+            <And>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>DoesNotMatchRegularExpression</Operator>
+                  <Pattern>^-0x.[4-7]-0x*</Pattern>
+                </RegExExpression>
+              </Expression>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>DoesNotMatchRegularExpression</Operator>
+                  <Pattern>^-0x.[C-F]-0x*</Pattern>
+                </RegExExpression>
+              </Expression>
+            </And>
+          </SecondExpression>
+          <NoOfRetries>3</NoOfRetries>
+          <Timeout>500</Timeout>
+          <Port>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/PortNumber$</Port>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="Xerox.Printers.Class.XeroxDoorOpen" Accessibility="Public" Enabled="true" Target="Xerox.Printers.Class" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="SNL!System.NetworkManagement.SnmpProbe.2SingleEvent2StateMonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="Xerox.Printers.Class.XeroxDoorOpen.Alert">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+          <AlertParameters>
+            <AlertParameter1>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Location$</AlertParameter1>
+            <AlertParameter2>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Model$</AlertParameter2>
+          </AlertParameters>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="Xerox.Printers.Class.XeroxDoorOpen.SecondProbe" MonitorTypeStateID="SecondEventRaised" HealthState="Success" />
+          <OperationalState ID="Xerox.Printers.Class.XeroxDoorOpen.FirstProbe" MonitorTypeStateID="FirstEventRaised" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <FirstInterval>60</FirstInterval>
+          <FirstIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</FirstIP>
+          <FirstVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</FirstVersion>
+          <FirstSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </FirstSnmpVarBinds>
+          <FirstExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+              </ValueExpression>
+              <Operator>MatchesRegularExpression</Operator>
+              <Pattern>^-0x.8-0x.*|^-0x.9-0x.*|^-0x.A-0x.*|^-0x.B-0x.*|^-0x.C-0x.*|^-0x.D-0x.*|^-0x.E-0x.*|^-0x.F-0x.*</Pattern>
+            </RegExExpression>
+          </FirstExpression>
+          <SecondInterval>60</SecondInterval>
+          <SecondIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</SecondIP>
+          <SecondVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</SecondVersion>
+          <SecondSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </SecondSnmpVarBinds>
+          <SecondExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+              </ValueExpression>
+              <Operator>DoesNotMatchRegularExpression</Operator>
+              <Pattern>^-0x.[8-F]-0x.*</Pattern>
+            </RegExExpression>
+          </SecondExpression>
+          <NoOfRetries>3</NoOfRetries>
+          <Timeout>500</Timeout>
+          <Port>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/PortNumber$</Port>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="Xerox.Printers.Class.XeroxNoToner" Accessibility="Public" Enabled="true" Target="Xerox.Printers.Class" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="SNL!System.NetworkManagement.SnmpProbe.2SingleEvent2StateMonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="Xerox.Printers.Class.XeroxNoToner.Alert">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+          <AlertParameters>
+            <AlertParameter1>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Location$</AlertParameter1>
+            <AlertParameter2>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Model$</AlertParameter2>
+          </AlertParameters>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="Xerox.Printers.Class.XeroxNoToner.SecondProbe" MonitorTypeStateID="SecondEventRaised" HealthState="Success" />
+          <OperationalState ID="Xerox.Printers.Class.XeroxNoToner.FirstProbe" MonitorTypeStateID="FirstEventRaised" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <FirstInterval>60</FirstInterval>
+          <FirstIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</FirstIP>
+          <FirstVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</FirstVersion>
+          <FirstSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </FirstSnmpVarBinds>
+          <FirstExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+              </ValueExpression>
+              <Operator>MatchesRegularExpression</Operator>
+              <Pattern>^-0x1.-0x*|^-0x3.-0x*|^-0x5.-0x*|^-0x7.-0x*|^-0x9.-0x*|^-0xB.-0x*|^-0xD.-0x*|^-0xF.-0x*</Pattern>
+            </RegExExpression>
+          </FirstExpression>
+          <SecondInterval>60</SecondInterval>
+          <SecondIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</SecondIP>
+          <SecondVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</SecondVersion>
+          <SecondSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </SecondSnmpVarBinds>
+          <SecondExpression>
+            <And>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>DoesNotMatchRegularExpression</Operator>
+                  <Pattern>^-0x1.-0x*</Pattern>
+                </RegExExpression>
+              </Expression>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>DoesNotMatchRegularExpression</Operator>
+                  <Pattern>^-0x3.-0x*</Pattern>
+                </RegExExpression>
+              </Expression>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>DoesNotMatchRegularExpression</Operator>
+                  <Pattern>^-0x5.-0x*</Pattern>
+                </RegExExpression>
+              </Expression>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>DoesNotMatchRegularExpression</Operator>
+                  <Pattern>^-0x7.-0x*</Pattern>
+                </RegExExpression>
+              </Expression>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>DoesNotMatchRegularExpression</Operator>
+                  <Pattern>^-0x9.-0x*</Pattern>
+                </RegExExpression>
+              </Expression>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>DoesNotMatchRegularExpression</Operator>
+                  <Pattern>^-0xB.-0x*</Pattern>
+                </RegExExpression>
+              </Expression>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>DoesNotMatchRegularExpression</Operator>
+                  <Pattern>^-0xD.-0x*</Pattern>
+                </RegExExpression>
+              </Expression>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>DoesNotMatchRegularExpression</Operator>
+                  <Pattern>^-0xF.-0x*</Pattern>
+                </RegExExpression>
+              </Expression>
+            </And>
+          </SecondExpression>
+          <NoOfRetries>3</NoOfRetries>
+          <Timeout>500</Timeout>
+          <Port>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/PortNumber$</Port>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="Xerox.Printers.Class.XeroxOutputBinFull" Accessibility="Public" Enabled="true" Target="Xerox.Printers.Class" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="SNL!System.NetworkManagement.SnmpProbe.2SingleEvent2StateMonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="Xerox.Printers.Class.XeroxOutputBinFull.Alert">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+          <AlertParameters>
+            <AlertParameter1>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Location$</AlertParameter1>
+            <AlertParameter2>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Model$</AlertParameter2>
+          </AlertParameters>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="Xerox.Printers.Class.XeroxOutputBinFull.SecondProbe" MonitorTypeStateID="SecondEventRaised" HealthState="Success" />
+          <OperationalState ID="Xerox.Printers.Class.XeroxOutputBinFull.FirstProbe" MonitorTypeStateID="FirstEventRaised" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <FirstInterval>60</FirstInterval>
+          <FirstIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</FirstIP>
+          <FirstVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</FirstVersion>
+          <FirstSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </FirstSnmpVarBinds>
+          <FirstExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+              </ValueExpression>
+              <Operator>MatchesRegularExpression</Operator>
+              <Pattern>^-0x..-0x.8|^-0x..-0x.9|^-0x..-0x.A|^-0x..-0x.B|^-0x..-0x.C|^-0x..-0x.D|^-0x..-0x.E|^-0x..-0x.F</Pattern>
+            </RegExExpression>
+          </FirstExpression>
+          <SecondInterval>60</SecondInterval>
+          <SecondIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</SecondIP>
+          <SecondVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</SecondVersion>
+          <SecondSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </SecondSnmpVarBinds>
+          <SecondExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+              </ValueExpression>
+              <Operator>DoesNotMatchRegularExpression</Operator>
+              <Pattern>^-0x..-0x.[8-F]</Pattern>
+            </RegExExpression>
+          </SecondExpression>
+          <NoOfRetries>3</NoOfRetries>
+          <Timeout>500</Timeout>
+          <Port>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/PortNumber$</Port>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="Xerox.Printers.Class.XeroxLowPaper" Accessibility="Public" Enabled="false" Target="Xerox.Printers.Class" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="SNL!System.NetworkManagement.SnmpProbe.2SingleEvent2StateMonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="Xerox.Printers.Class.XeroxLowPaper.Alert">
+          <AlertOnState>Warning</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Warning</AlertSeverity>
+          <AlertParameters>
+            <AlertParameter1>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Location$</AlertParameter1>
+            <AlertParameter2>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Model$</AlertParameter2>
+          </AlertParameters>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="Xerox.Printers.Class.XeroxLowPaper.SecondProbe" MonitorTypeStateID="SecondEventRaised" HealthState="Success" />
+          <OperationalState ID="Xerox.Printers.Class.XeroxLowPaper.FirstProbe" MonitorTypeStateID="FirstEventRaised" HealthState="Warning" />
+        </OperationalStates>
+        <Configuration>
+          <FirstInterval>60</FirstInterval>
+          <FirstIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</FirstIP>
+          <FirstVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</FirstVersion>
+          <FirstSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </FirstSnmpVarBinds>
+          <FirstExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+              </ValueExpression>
+              <Operator>MatchesRegularExpression</Operator>
+              <Pattern>^-0x8.-0x*|^-0x9.-0x*|^-0xA.-0x*|^-0xB.-0x*|^-0xC.-0x*|^-0xD.-0x*|^-0xE.-0x*|^-0xF.-0x*</Pattern>
+            </RegExExpression>
+          </FirstExpression>
+          <SecondInterval>60</SecondInterval>
+          <SecondIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</SecondIP>
+          <SecondVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</SecondVersion>
+          <SecondSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </SecondSnmpVarBinds>
+          <SecondExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+              </ValueExpression>
+              <Operator>DoesNotMatchRegularExpression</Operator>
+              <Pattern>^-0x[8-F].-0x*</Pattern>
+            </RegExExpression>
+          </SecondExpression>
+          <NoOfRetries>3</NoOfRetries>
+          <Timeout>500</Timeout>
+          <Port>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/PortNumber$</Port>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="Xerox.Printers.Class.XeroxOutOfPaper" Accessibility="Public" Enabled="true" Target="Xerox.Printers.Class" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="SNL!System.NetworkManagement.SnmpProbe.2SingleEvent2StateMonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="Xerox.Printers.Class.XeroxOutOfPaper.Alert">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+          <AlertParameters>
+            <AlertParameter1>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Location$</AlertParameter1>
+            <AlertParameter2>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Model$</AlertParameter2>
+          </AlertParameters>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="Xerox.Printers.Class.XeroxOutOfPaper.SecondProbe" MonitorTypeStateID="SecondEventRaised" HealthState="Success" />
+          <OperationalState ID="Xerox.Printers.Class.XeroxOutOfPaper.FirstProbe" MonitorTypeStateID="FirstEventRaised" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <FirstInterval>60</FirstInterval>
+          <FirstIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</FirstIP>
+          <FirstVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</FirstVersion>
+          <FirstSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </FirstSnmpVarBinds>
+          <FirstExpression>
+            <And>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>MatchesRegularExpression</Operator>
+                  <Pattern>^-0x4.-0x..|^-0x5.-0x..|^-0x6.-0x..|^-0x7.-0x..|^-0xC.-0x..|^-0xD.-0x..|^-0xE.-0x..|^-0xF.-0x..</Pattern>
+                </RegExExpression>
+              </Expression>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>ContainsSubstring</Operator>
+                  <Pattern>@</Pattern>
+                </RegExExpression>
+              </Expression>
+            </And>
+          </FirstExpression>
+          <SecondInterval>60</SecondInterval>
+          <SecondIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</SecondIP>
+          <SecondVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</SecondVersion>
+          <SecondSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </SecondSnmpVarBinds>
+          <SecondExpression>
+            <And>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>DoesNotMatchRegularExpression</Operator>
+                  <Pattern>^-0x[4-7].-0x..</Pattern>
+                </RegExExpression>
+              </Expression>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>DoesNotMatchRegularExpression</Operator>
+                  <Pattern>^-0x[C-F].-0x..</Pattern>
+                </RegExExpression>
+              </Expression>
+              <Expression>
+                <RegExExpression>
+                  <ValueExpression>
+                    <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+                  </ValueExpression>
+                  <Operator>DoesNotContainSubstring</Operator>
+                  <Pattern>@</Pattern>
+                </RegExExpression>
+              </Expression>
+            </And>
+          </SecondExpression>
+          <NoOfRetries>3</NoOfRetries>
+          <Timeout>500</Timeout>
+          <Port>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/PortNumber$</Port>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="Xerox.Printers.Class.XeroxWasteTonerFull" Accessibility="Public" Enabled="true" Target="Xerox.Printers.Class" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="SNL!System.NetworkManagement.SnmpProbe.2SingleEvent2StateMonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="Xerox.Printers.Class.XeroxWasteTonerFull.Alert">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+          <AlertParameters>
+            <AlertParameter1>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Location$</AlertParameter1>
+            <AlertParameter2>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Model$</AlertParameter2>
+          </AlertParameters>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="Xerox.Printers.Class.XeroxWasteTonerFull.SecondProbe" MonitorTypeStateID="SecondEventRaised" HealthState="Success" />
+          <OperationalState ID="Xerox.Printers.Class.XeroxWasteTonerFull.FirstProbe" MonitorTypeStateID="FirstEventRaised" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <FirstInterval>60</FirstInterval>
+          <FirstIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</FirstIP>
+          <FirstVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</FirstVersion>
+          <FirstSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>.1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </FirstSnmpVarBinds>
+          <FirstExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+              </ValueExpression>
+              <Operator>MatchesRegularExpression</Operator>
+              <Pattern>^-0x03-0x*|^-0x83-0x*</Pattern>
+            </RegExExpression>
+          </FirstExpression>
+          <SecondInterval>60</SecondInterval>
+          <SecondIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</SecondIP>
+          <SecondVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</SecondVersion>
+          <SecondSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>.1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </SecondSnmpVarBinds>
+          <SecondExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+              </ValueExpression>
+              <Operator>DoesNotMatchRegularExpression</Operator>
+              <Pattern>^-0x03-0x*|^-0x83-0x*</Pattern>
+            </RegExExpression>
+          </SecondExpression>
+          <NoOfRetries>3</NoOfRetries>
+          <Timeout>500</Timeout>
+          <Port>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/PortNumber$</Port>
+        </Configuration>
+      </UnitMonitor>
+      <UnitMonitor ID="Xerox.Printers.Class.XeroxDrumCartridge" Accessibility="Public" Enabled="true" Target="Xerox.Printers.Class" ParentMonitorID="Health!System.Health.AvailabilityState" Remotable="true" Priority="Normal" TypeID="SNL!System.NetworkManagement.SnmpProbe.2SingleEvent2StateMonitorType" ConfirmDelivery="false">
+        <Category>Custom</Category>
+        <AlertSettings AlertMessage="Xerox.Printers.Class.XeroxDrumCartridge.Alert">
+          <AlertOnState>Error</AlertOnState>
+          <AutoResolve>true</AutoResolve>
+          <AlertPriority>Normal</AlertPriority>
+          <AlertSeverity>Error</AlertSeverity>
+          <AlertParameters>
+            <AlertParameter1>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Location$</AlertParameter1>
+            <AlertParameter2>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/Model$</AlertParameter2>
+          </AlertParameters>
+        </AlertSettings>
+        <OperationalStates>
+          <OperationalState ID="Xerox.Printers.Class.XeroxDrumCartridge.SecondProbe" MonitorTypeStateID="SecondEventRaised" HealthState="Success" />
+          <OperationalState ID="Xerox.Printers.Class.XeroxDrumCartridge.FirstProbe" MonitorTypeStateID="FirstEventRaised" HealthState="Error" />
+        </OperationalStates>
+        <Configuration>
+          <FirstInterval>60</FirstInterval>
+          <FirstIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</FirstIP>
+          <FirstVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</FirstVersion>
+          <FirstSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>.1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </FirstSnmpVarBinds>
+          <FirstExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+              </ValueExpression>
+              <Operator>MatchesRegularExpression</Operator>
+              <Pattern>^-0x21-0x*|^-0x23-0x*</Pattern>
+            </RegExExpression>
+          </FirstExpression>
+          <SecondInterval>60</SecondInterval>
+          <SecondIP>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPAddress$</SecondIP>
+          <SecondVersion>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/SNMPVersion$</SecondVersion>
+          <SecondSnmpVarBinds>
+            <SnmpVarBind>
+              <OID>.1.3.6.1.2.1.25.3.5.1.2.1</OID>
+              <Syntax>0</Syntax>
+              <Value VariantType="8" />
+            </SnmpVarBind>
+          </SecondSnmpVarBinds>
+          <SecondExpression>
+            <RegExExpression>
+              <ValueExpression>
+                <XPathQuery Type="String">/DataItem/SnmpVarBinds/SnmpVarBind[1]/Value</XPathQuery>
+              </ValueExpression>
+              <Operator>DoesNotMatchRegularExpression</Operator>
+              <Pattern>^-0x21-0x*|^-0x23-0x*</Pattern>
+            </RegExExpression>
+          </SecondExpression>
+          <NoOfRetries>3</NoOfRetries>
+          <Timeout>500</Timeout>
+          <Port>$Target/Property[Type="SNL!System.NetworkManagement.Node"]/PortNumber$</Port>
+        </Configuration>
+      </UnitMonitor>
+    </Monitors>
+  </Monitoring>
+  <Presentation>
+    <Folders>
+      <Folder ID="Xerox.Printers.Class.Folder" Accessibility="Public" ParentFolder="SystemCenter!Microsoft.SystemCenter.Monitoring.ViewFolder.Root" />
+    </Folders>
+    <StringResources>
+      <StringResource ID="Xerox.Printers.Class.XeroxPaperJam.Alert" />
+      <StringResource ID="Xerox.Printers.Class.XeroxDoorOpen.Alert" />
+      <StringResource ID="Xerox.Printers.Class.XeroxNoToner.Alert" />
+      <StringResource ID="Xerox.Printers.Class.XeroxOutputBinFull.Alert" />
+      <StringResource ID="Xerox.Printers.Class.XeroxLowPaper.Alert" />
+      <StringResource ID="Xerox.Printers.Class.XeroxOutOfPaper.Alert" />
+      <StringResource ID="Xerox.Printers.Class.XeroxWasteTonerFull.Alert" />
+      <StringResource ID="Xerox.Printers.Class.XeroxDrumCartridge.Alert" />
+    </StringResources>
+  </Presentation>
+  <LanguagePacks>
+    <LanguagePack ID="ENU" IsDefault="true">
+      <DisplayStrings>
+        <DisplayString ElementID="Xerox.Printers.Class">
+          <Name>Xerox - Printer Device Class</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers">
+          <Name>Xerox Printers Management Pack</Name>
+          <Description>Xerox Management Pack for Printer Device Monitoring</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXerox5745">
+          <Name>Xerox WorkCentre 5745 Discovery</Name>
+          <Description>Xerox WorkCentre 5745 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXerox5845">
+          <Name>Xerox WorkCentre 5845 Discovery</Name>
+          <Description>Xerox WorkCentre 5845 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXerox7535">
+          <Name>Xerox WorkCentre 7535 Discovery</Name>
+          <Description>Xerox WorkCentre 7535 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXerox7435">
+          <Name>Xerox WorkCentre 7435 Discovery</Name>
+          <Description>Xerox WorkCentre 7435 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXerox5645">
+          <Name>Xerox WorkCentre 5645 Discovery</Name>
+          <Description>Xerox WorkCentre 5645 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXerox5945">
+          <Name>Xerox WorkCentre 5945 Discovery</Name>
+          <Description>Xerox WorkCentre 5945 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXerox7225">
+          <Name>Xerox WorkCentre 7225 Discovery</Name>
+          <Description>Xerox Worcentre 7225 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXerox5325">
+          <Name>Xerox WorkCentre 5325 Discovery</Name>
+          <Description>Xerox Worcentre 5325 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXerox7845">
+          <Name>Xerox WorkCentre 7845 Discovery</Name>
+          <Description>Xerox Worcentre 7845 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXeroxPhaser_4622">
+          <Name>Xerox Phaser 4622 Discovery</Name>
+          <Description>Xerox Phaser 4622 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXeroxVersalink_C7025">
+          <Name>Xerox VersaLink C7025 Discovery</Name>
+          <Description>Xerox VersaLink C7025 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXeroxVersalink_B7025">
+          <Name>Xerox VersaLink B7025 Discovery</Name>
+          <Description>Xerox VersaLink B7025 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXeroxVersalink_B7030">
+          <Name>Xerox VersaLink B7030 Discovery</Name>
+          <Description>Xerox VersaLink B7030 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXeroxAltalink_B8045">
+          <Name>Xerox AltaLink B8045 Discovery</Name>
+          <Description>Xerox AltaLink B8045 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.DiscoveryXeroxAltalink_C8035">
+          <Name>Xerox AltaLink C8035 Discovery</Name>
+          <Description>Xerox AltaLink C8035 Device Discovery</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxPaperJam" SubElementID="Xerox.Printers.Class.XeroxPaperJam.SecondProbe">
+          <Name>Recovery</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxPaperJam" SubElementID="Xerox.Printers.Class.XeroxPaperJam.FirstProbe">
+          <Name>Warning</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxPaperJam">
+          <Name>Xerox Paper Jam</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxDoorOpen" SubElementID="Xerox.Printers.Class.XeroxDoorOpen.SecondProbe">
+          <Name>Recovery</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxDoorOpen" SubElementID="Xerox.Printers.Class.XeroxDoorOpen.FirstProbe">
+          <Name>Warning</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxDoorOpen">
+          <Name>Xerox Door Open</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxNoToner" SubElementID="Xerox.Printers.Class.XeroxNoToner.SecondProbe">
+          <Name>Recovery</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxNoToner" SubElementID="Xerox.Printers.Class.XeroxNoToner.FirstProbe">
+          <Name>Warning</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxNoToner">
+          <Name>Xerox No Toner</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxOutputBinFull" SubElementID="Xerox.Printers.Class.XeroxOutputBinFull.SecondProbe">
+          <Name>Recovery</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxOutputBinFull" SubElementID="Xerox.Printers.Class.XeroxOutputBinFull.FirstProbe">
+          <Name>Warning</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxOutputBinFull">
+          <Name>Xerox Output Bin Full</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxLowPaper" SubElementID="Xerox.Printers.Class.XeroxLowPaper.SecondProbe">
+          <Name>Recovery</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxLowPaper" SubElementID="Xerox.Printers.Class.XeroxLowPaper.FirstProbe">
+          <Name>Warning</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxLowPaper">
+          <Name>Xerox Low Paper</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxOutOfPaper" SubElementID="Xerox.Printers.Class.XeroxOutOfPaper.SecondProbe">
+          <Name>Recovery</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxOutOfPaper" SubElementID="Xerox.Printers.Class.XeroxOutOfPaper.FirstProbe">
+          <Name>Warning</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxOutOfPaper">
+          <Name>Xerox Out Of Paper</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxWasteTonerFull" SubElementID="Xerox.Printers.Class.XeroxWasteTonerFull.SecondProbe">
+          <Name>Recovery</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxWasteTonerFull" SubElementID="Xerox.Printers.Class.XeroxWasteTonerFull.FirstProbe">
+          <Name>Warning</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxWasteTonerFull">
+          <Name>Xerox Waste Toner Full</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxDrumCartridge" SubElementID="Xerox.Printers.Class.XeroxDrumCartridge.SecondProbe">
+          <Name>Recovery</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxDrumCartridge" SubElementID="Xerox.Printers.Class.XeroxDrumCartridge.FirstProbe">
+          <Name>Warning</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxDrumCartridge">
+          <Name>Xerox Replace Drum Cartridge</Name>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxPaperJam.Alert">
+          <Name>Paper Jam</Name>
+          <Description>Location: {0}
+Model: {1}</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxDoorOpen.Alert">
+          <Name>Door Open</Name>
+          <Description>Location: {0}
+Model: {1}</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxNoToner.Alert">
+          <Name>No Toner</Name>
+          <Description>Location: {0}
+Model: {1}</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxOutputBinFull.Alert">
+          <Name>Output Bin Full</Name>
+          <Description>Location: {0}
+Model: {1}</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxLowPaper.Alert">
+          <Name>Low Paper</Name>
+          <Description>Location: {0}
+Model: {1}</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxOutOfPaper.Alert">
+          <Name>Out of Paper</Name>
+          <Description>Location: {0}
+Model: {1}</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxWasteTonerFull.Alert">
+          <Name>Waste Toner Full</Name>
+          <Description>Location: {0}
+Model: {1}</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.XeroxDrumCartridge.Alert">
+          <Name>Replace Drum Cartridge</Name>
+          <Description>Location: {0}
+Model: {1}</Description>
+        </DisplayString>
+        <DisplayString ElementID="Xerox.Printers.Class.Folder">
+          <Name>Xerox Printers Management Pack</Name>
+        </DisplayString>
+      </DisplayStrings>
+      <KnowledgeArticles></KnowledgeArticles>
+    </LanguagePack>
+  </LanguagePacks>
+</ManagementPack>
